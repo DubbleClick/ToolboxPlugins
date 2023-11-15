@@ -4,7 +4,7 @@
 #include <GWCA/Utilities/Hooker.h>
 
 namespace {
-    typedef bool (__cdecl *IsDialogAvailable_pt)(unsigned int dialog_id);
+    using IsDialogAvailable_pt = bool(__cdecl *)(unsigned int dialog_id);
     IsDialogAvailable_pt IsDialogAvailable_Func = nullptr;
     IsDialogAvailable_pt IsDialogAvailable_Ret = nullptr;
 
@@ -45,14 +45,14 @@ void AllowAllDialogs::Initialize(ImGuiContext* ctx, ImGuiAllocFns fns, HMODULE t
 
     GW::HookBase::Initialize();
     GW::Scanner::Initialize(toolbox_dll);
-    uintptr_t address = GW::Scanner::Find("\x25\x00\x00\x00\xFF\x74\x02", "xxxxxxx", 0xd);
-    IsDialogAvailable_Func = (IsDialogAvailable_pt)GW::Scanner::FunctionFromNearCall(address);
+    const uintptr_t address = GW::Scanner::Find("\x25\x00\x00\x00\xFF\x74\x02", "xxxxxxx", 0xd);
+    IsDialogAvailable_Func = reinterpret_cast<IsDialogAvailable_pt>(GW::Scanner::FunctionFromNearCall(address));
 
     if (IsDialogAvailable_Func) {
-        GW::HookBase::CreateHook(IsDialogAvailable_Func, OnIsDialogAvailable, (void**)&IsDialogAvailable_Ret);
+        GW::HookBase::CreateHook(IsDialogAvailable_Func, OnIsDialogAvailable, reinterpret_cast<void**>(&IsDialogAvailable_Ret));
         GW::HookBase::EnableHooks(IsDialogAvailable_Func);
     }
     if (!IsDialogAvailable_Func) {
-        MessageBox(NULL, Name(), "Failed to get signature for IsDialogAvailable_Func", 0);
+        MessageBox(nullptr, Name(), "Failed to get signature for IsDialogAvailable_Func", 0);
     }
 }

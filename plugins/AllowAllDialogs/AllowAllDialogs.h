@@ -4,10 +4,10 @@
 
 class AllowAllDialogs : public ToolboxPlugin {
 public:
-    const char* Name() const override { return "Allow All Dialogs"; }
+    [[nodiscard]] const char* Name() const override { return "Allow All Dialogs"; }
 
     void Initialize(ImGuiContext*, ImGuiAllocFns, HMODULE) override;
-    void SignalTerminate();
-    bool CanTerminate();
+    void SignalTerminate() override;
+    bool CanTerminate() override;
     void Terminate() override;
 };

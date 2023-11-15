@@ -1,3 +1,4 @@
+#define GWCA_CTOS_ENABLED 1
 #include "RawDialogs.h"
 
 #include "GWCA/Managers/CtoSMgr.h"
@@ -11,18 +12,12 @@
 #include <GWCA/Constants/Constants.h>
 #include <GWCA/GWCA.h>
 
-#include <GWCA/Utilities/Hooker.h>
-#include <GWCA/Utilities/MemoryPatcher.h>
-#include <GWCA/Utilities/Scanner.h>
-
 #include <GWCA/Managers/MapMgr.h>
 #include <GWCA/Managers/MemoryMgr.h>
 
 #include <GWCA/Managers/AgentMgr.h>
 #include <GWCA/Managers/ChatMgr.h>
 #include <GWCA/Managers/GameThreadMgr.h>
-
-GW::MemoryPatcher isDialogAvailablePatch;
 
 DLLAPI ToolboxPlugin* ToolboxPluginInstance()
 {
@@ -117,40 +112,25 @@ void RawDialogs::Initialize(ImGuiContext* ctx, const ImGuiAllocFns fns, const HM
 {
     ToolboxUIPlugin::Initialize(ctx, fns, toolbox_dll);
 
-    GW::Scanner::Initialize(toolbox_dll);
-
-    auto address = GW::Scanner::Find("\x75\x0\x8B\x45\x08\xC6\x00\x0\x5D\xC3\x5D", "x?xxxxx?xxx"); // relwithdebinfo
-    if (!address) {
-        address = GW::Scanner::Find("\x75\x0\x8B\x45\x08\xC6\x00\x0\xEB", "x?xxxxx?x"); // debug dll
-    }
-    if (address) {
-        // override JNZ (75) with JMP (EB)
-        isDialogAvailablePatch.SetPatch(address, "\xEB", 1);
-        isDialogAvailablePatch.TogglePatch(true);
-        GW::Scanner::Initialize();
-        GW::Chat::CreateCommand(L"rawdialog", SendDialog);
-        WriteChat(GW::Chat::CHANNEL_GWCA1, L"Initialized", L"RawDialogs");
-    }
-    else {
-        GW::Scanner::Initialize();
-        WriteChat(GW::Chat::CHANNEL_GWCA1, L"Failed to initialize properly\nPlease make sure you use a RelWithDebInfo dll or ask the plugin author.", L"RawDialogs");
-    }
+    GW::Chat::CreateCommand(L"rawdialog", SendDialog);
+    WriteChat(GW::Chat::CHANNEL_GWCA1, L"Initialized", L"RawDialogs");
 }
 
 void RawDialogs::SignalTerminate()
 {
     ToolboxUIPlugin::SignalTerminate();
-    isDialogAvailablePatch.Reset();
     GW::Chat::DeleteCommand(L"dialog");
     GW::Chat::DeleteCommand(L"rawdialog");
     GW::DisableHooks();
 }
 
 namespace {
-    constexpr const char* const questnames[] = {"UW - Chamber", "UW - Wastes", "UW - UWG", "UW - Mnt", "UW - Pits", "UW - Planes", "UW - Pools", "UW - Escort", "UW - Restore", "UW - Vale", "FoW - Defend", "FoW - Army Of Darkness", "FoW - WailingLord",
-                                                "FoW - Griffons", "FoW - Slaves", "FoW - Restore", "FoW - Hunt", "FoW - Forgemaster", "FoW - Tos", "FoW - Toc", "FoW - Khobay", "DoA - Gloom 1: Deathbringer Company", "DoA - Gloom 2: The Rifts Between Us",
-                                                "DoA - Gloom 3: To The Rescue",
-                                                "DoA - City", "DoA - Veil 1: Breaching Stygian Veil", "DoA - Veil 2: Brood Wars", "DoA - Foundry 1: Foundry Of Failed Creations", "DoA - Foundry 2: Foundry Breakout"};
+    constexpr const char* const questnames[] = {
+        "UW - Chamber", "UW - Wastes", "UW - UWG", "UW - Mnt", "UW - Pits", "UW - Planes", "UW - Pools", "UW - Escort", "UW - Restore", "UW - Vale", "FoW - Defend", "FoW - Army Of Darkness", "FoW - WailingLord",
+        "FoW - Griffons", "FoW - Slaves", "FoW - Restore", "FoW - Hunt", "FoW - Forgemaster", "FoW - Tos", "FoW - Toc", "FoW - Khobay", "DoA - Gloom 1: Deathbringer Company", "DoA - Gloom 2: The Rifts Between Us",
+        "DoA - Gloom 3: To The Rescue",
+        "DoA - City", "DoA - Veil 1: Breaching Stygian Veil", "DoA - Veil 2: Brood Wars", "DoA - Foundry 1: Foundry Of Failed Creations", "DoA - Foundry 2: Foundry Breakout"
+    };
     constexpr const char* const dialognames[] = {
         "Craft fow armor",
         "Prof Change - Warrior",
