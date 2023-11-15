@@ -17,4 +17,4 @@ endif()
 
 FetchContent_Populate(gwtoolboxpp)
 
-add_subdirectory(${gwtoolboxpp_SOURCE_DIR})
+add_subdirectory(${gwtoolboxpp_SOURCE_DIR} EXCLUDE_FROM_ALL)
