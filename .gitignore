@@ -1,0 +1,73 @@
+# IntelliJ
+.idea
+
+# Build directories
+Debug/
+Release/
+ipch/
+Archive/
+bin/
+
+# Cmake generated
+_deps/
+*.vcxproj
+*.vcxproj.filters
+*.sln
+*CMakeFiles*
+CMakeCache.txt
+*cmake_install.cmake
+*.tlog
+*.recipe
+*.lib
+*.res
+
+# Bloated Windows Databases
+*.sdf
+*.opensdf
+*.suo
+*.exp
+*.db
+*.pdb
+*.idb
+*.ilk
+*.opendb
+*.log
+*.lastbuildstate
+
+# Compiled files
+*.slo
+*.lo
+*.o
+*.obj
+*.exe
+*.wxs
+*.wixobj
+*.msi
+*_ps.h
+*_vs.h
+
+# Precompiled Headers
+*.gch
+*.pch
+*.idb
+*.pdb
+*.opendb
+*.wixpdb
+
+# Visual studio stuff
+*.user
+
+Dependencies/OSHGui/Include
+docs/_site/
+Gemfile.lock
+GWToolbox/~*.tmp
+GWToolbox.aps
+
+# Sublime Text stuff
+*.sublime-project*
+*.sublime-workspace*
+.vs/
+build/
+
+# VSCode stuff
+.vscode/
