@@ -71,6 +71,7 @@ FOREACH(subdir ${SUBDIRS})
 		"_WIN32_WINNT=_WIN32_WINNT_WIN7"
 		"WIN32_LEAN_AND_MEAN"
 		"VC_EXTRALEAN"
+		"BUILD_DLL"
 		)
 	
 	set_target_properties(${subdir} PROPERTIES FOLDER "plugins")
