@@ -1,8 +1,5 @@
-#define GWCA_CTOS_ENABLED 1
 #include "RawDialogs.h"
 
-#include "GWCA/Managers/CtoSMgr.h"
-#include "GWCA/Packets/Opcodes.h"
 
 #include <cstdint>
 #include <filesystem>
@@ -14,15 +11,19 @@
 
 #include <GWCA/Managers/MapMgr.h>
 #include <GWCA/Managers/MemoryMgr.h>
-
-#include <GWCA/Managers/AgentMgr.h>
+#include <GWCA/Managers/CtoSMgr.h>
 #include <GWCA/Managers/ChatMgr.h>
-#include <GWCA/Managers/GameThreadMgr.h>
+#include <GWCA/Packets/Opcodes.h>
 
 DLLAPI ToolboxPlugin* ToolboxPluginInstance()
 {
     static RawDialogs instance;
     return &instance;
+}
+
+auto SendDialog(auto id)
+{
+    return GW::CtoS::SendPacket(0x8, GAME_CMSG_SEND_DIALOG, id);
 }
 
 auto ParseUInt(const wchar_t* str, unsigned int* val, const int base = 0)
@@ -77,7 +78,7 @@ auto ParseInt(const char* str, int* val, const int base = 0)
     return true;
 }
 
-void SendDialog(const wchar_t*, const int argc, const LPWSTR* argv)
+void SendDialogCmd(const wchar_t*, const int argc, const LPWSTR* argv)
 {
     const auto IsMapReady = [] {
         return GW::Map::GetInstanceType() != GW::Constants::InstanceType::Loading && !GW::Map::GetIsObserving() && GW::MemoryMgr::GetGWWindowHandle() == GetActiveWindow();
@@ -103,16 +104,14 @@ void SendDialog(const wchar_t*, const int argc, const LPWSTR* argv)
     if (!(ParseUInt(argv[1], &id) && id)) {
         return;
     }
-    GW::GameThread::Enqueue([id] {
-        GW::CtoS::SendPacket(0x8, GAME_CMSG_SEND_DIALOG, id);
-    });
+    SendDialog(id);
 }
 
 void RawDialogs::Initialize(ImGuiContext* ctx, const ImGuiAllocFns fns, const HMODULE toolbox_dll)
 {
     ToolboxUIPlugin::Initialize(ctx, fns, toolbox_dll);
 
-    GW::Chat::CreateCommand(L"rawdialog", SendDialog);
+    GW::Chat::CreateCommand(L"rawdialog", SendDialogCmd);
     WriteChat(GW::Chat::CHANNEL_GWCA1, L"Initialized", L"RawDialogs");
 }
 
@@ -268,7 +267,7 @@ void RawDialogs::Draw(IDirect3DDevice9*)
         }
         const float w = (ImGui::GetWindowWidth() - ImGui::GetStyle().ItemInnerSpacing.x * (x_qty - 1)) / x_qty;
         if (ImGui::Button(text, ImVec2(w, 0))) {
-            GW::Agents::SendDialog(dialog);
+            SendDialog(dialog);
         }
         if (text != nullptr && ImGui::IsItemHovered()) {
             ImGui::SetTooltip(help);
@@ -307,11 +306,11 @@ void RawDialogs::Draw(IDirect3DDevice9*)
                 ImGui::PopItemWidth();
                 ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
                 if (ImGui::Button("Take", ImVec2(40.0f, 0))) {
-                    GW::Agents::SendDialog(QuestAcceptDialog(IndexToQuestID(fav_index[index])));
+                    SendDialog(QuestAcceptDialog(IndexToQuestID(fav_index[index])));
                 }
                 ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
                 if (ImGui::Button("Reward", ImVec2(60.0f, 0))) {
-                    GW::Agents::SendDialog(QuestRewardDialog(IndexToQuestID(fav_index[index])));
+                    SendDialog(QuestRewardDialog(IndexToQuestID(fav_index[index])));
                 }
                 ImGui::PopID();
             }
@@ -325,7 +324,7 @@ void RawDialogs::Draw(IDirect3DDevice9*)
             ImGui::PopItemWidth();
             ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
             if (ImGui::Button("Send##1", ImVec2(60.0f, 0))) {
-                GW::Agents::SendDialog(IndexToDialogID(dialogindex));
+                SendDialog(IndexToDialogID(dialogindex));
             }
 
             ImGui::PushItemWidth(-60.0f - ImGui::GetStyle().ItemInnerSpacing.x);
@@ -339,7 +338,7 @@ void RawDialogs::Draw(IDirect3DDevice9*)
                 int iid;
                 if (ParseInt(customdialogbuf, &iid) && 0 <= iid) {
                     const auto id = static_cast<uint32_t>(iid);
-                    GW::Agents::SendDialog(id);
+                    SendDialog(id);
                 }
             }
         }
