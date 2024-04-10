@@ -29,17 +29,27 @@ void TargetEverything::Initialize(ImGuiContext* ctx, const ImGuiAllocFns fns, co
 
     GW::Initialize();
     GW::Scanner::Initialize(toolbox_dll);
+    // RelWithDebInfo toolbox 6.12
     GetIsAgentTargettable_Func = reinterpret_cast<GetIsAgentTargettableFn>(GW::Scanner::Find("\x55\x8B\xEC\x8B\x45\x08\x85\xC0\x74\x0\xF6\x80\x9C\x00\x00\x00\x0\x74", "xxxxxxxxx?xxxxxx?x"));
     if (!GetIsAgentTargettable_Func) {
-        // DEBUG toolbox?
+        // DEBUG toolbox 6.12
         GetIsAgentTargettable_Func = reinterpret_cast<GetIsAgentTargettableFn>(
             GW::Scanner::Find("\x55\x8B\xEC\x83\xEC\x0\xC7\x45\xF8\x0\x0\x0\x0\xC7\x45\xFC\x0\x0\x0\x0\x83\x7D\x08\x0\x75\x0\x32\xC0", "xxxxx?xxx????xxx????xxx?x?xx")
         );
     }
     if (!GetIsAgentTargettable_Func) {
-        WriteChat(GW::Chat::CHANNEL_GWCA1, L"Failed to initialize", L"TargetEverything");
-        return;
+        // DEBUG toolbox 6.13
+        GetIsAgentTargettable_Func = reinterpret_cast<GetIsAgentTargettableFn>(
+            GW::Scanner::Find("\x55\x8B\xEC\x83\xEC\x0\xC7\x45\xF4\x0\x0\x0\x0\xC7\x45\xF8\x0\x0\x0\x0\xC7\x45\xFC\x0\x0\x0\x0\x83\x7D\x08\x0\x74\x0D", "xxxxx?xxx????xxx????xxx????xxx?xx")
+        );
     }
+    if (!GetIsAgentTargettable_Func) {
+        // RelWithDebInfo toolbox 6.13
+        GetIsAgentTargettable_Func = reinterpret_cast<GetIsAgentTargettableFn>(
+            GW::Scanner::Find("\x55\x8B\xEC\x8B\x45\x08\x85\xC0\x74\x3C", "xxxxxxxxxx")
+        );
+    }
+
     GW::HookBase::CreateHook(GetIsAgentTargettable_Func, GetIsAgentTargettableOverride, reinterpret_cast<void**>(&RetGetIsAgentTargettable));
     GW::HookBase::EnableHooks(GetIsAgentTargettable_Func);
     GW::Scanner::Initialize();

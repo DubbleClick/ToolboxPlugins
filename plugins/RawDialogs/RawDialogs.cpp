@@ -1,9 +1,8 @@
 #include "RawDialogs.h"
 
-
 #include <cstdint>
 #include <filesystem>
-
+#include <array>
 #include <imgui.h>
 #include <Defines.h>
 #include <GWCA/Constants/Constants.h>
@@ -13,7 +12,8 @@
 #include <GWCA/Managers/MemoryMgr.h>
 #include <GWCA/Managers/CtoSMgr.h>
 #include <GWCA/Managers/ChatMgr.h>
-#include <GWCA/Packets/Opcodes.h>
+
+#define GAME_CMSG_SEND_DIALOG                       (0x0039) // 57
 
 DLLAPI ToolboxPlugin* ToolboxPluginInstance()
 {
@@ -118,19 +118,18 @@ void RawDialogs::Initialize(ImGuiContext* ctx, const ImGuiAllocFns fns, const HM
 void RawDialogs::SignalTerminate()
 {
     ToolboxUIPlugin::SignalTerminate();
-    GW::Chat::DeleteCommand(L"dialog");
     GW::Chat::DeleteCommand(L"rawdialog");
     GW::DisableHooks();
 }
 
 namespace {
-    constexpr const char* const questnames[] = {
+    constexpr std::array questnames = {
         "UW - Chamber", "UW - Wastes", "UW - UWG", "UW - Mnt", "UW - Pits", "UW - Planes", "UW - Pools", "UW - Escort", "UW - Restore", "UW - Vale", "FoW - Defend", "FoW - Army Of Darkness", "FoW - WailingLord",
         "FoW - Griffons", "FoW - Slaves", "FoW - Restore", "FoW - Hunt", "FoW - Forgemaster", "FoW - Tos", "FoW - Toc", "FoW - Khobay", "DoA - Gloom 1: Deathbringer Company", "DoA - Gloom 2: The Rifts Between Us",
         "DoA - Gloom 3: To The Rescue",
         "DoA - City", "DoA - Veil 1: Breaching Stygian Veil", "DoA - Veil 2: Brood Wars", "DoA - Foundry 1: Foundry Of Failed Creations", "DoA - Foundry 2: Foundry Breakout"
     };
-    constexpr const char* const dialognames[] = {
+    constexpr std::array dialognames = {
         "Craft fow armor",
         "Prof Change - Warrior",
         "Prof Change - Ranger",
@@ -296,13 +295,13 @@ void RawDialogs::Draw(IDirect3DDevice9*)
             DialogButton(2, 3, "Mountains", "Teleport Mountains\nThis is NOT the mountains quest", GW::Constants::DialogID::UwTeleMnt);
             ImGui::Separator();
         }
-        constexpr size_t n_quests = _countof(questnames);
+        constexpr size_t n_quests = questnames.size();
         if (show_favorites) {
             for (int i = 0; i < fav_count; ++i) {
                 const auto index = static_cast<size_t>(i);
                 ImGui::PushID(i);
                 ImGui::PushItemWidth(-100.0f - ImGui::GetStyle().ItemInnerSpacing.x * 2);
-                ImGui::Combo("", &fav_index[index], questnames, n_quests);
+                ImGui::Combo("", &fav_index[index], questnames.data(), n_quests);
                 ImGui::PopItemWidth();
                 ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
                 if (ImGui::Button("Take", ImVec2(40.0f, 0))) {
@@ -317,10 +316,10 @@ void RawDialogs::Draw(IDirect3DDevice9*)
             ImGui::Separator();
         }
         if (show_custom) {
-            constexpr int n_dialogs = _countof(dialognames);
+            constexpr int n_dialogs = dialognames.size();
             static int dialogindex = 0;
             ImGui::PushItemWidth(-60.0f - ImGui::GetStyle().ItemInnerSpacing.x);
-            ImGui::Combo("###dialogcombo", &dialogindex, dialognames, n_dialogs);
+            ImGui::Combo("###dialogcombo", &dialogindex, dialognames.data(), n_dialogs);
             ImGui::PopItemWidth();
             ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
             if (ImGui::Button("Send##1", ImVec2(60.0f, 0))) {

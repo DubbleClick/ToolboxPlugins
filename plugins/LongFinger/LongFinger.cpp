@@ -2,7 +2,6 @@
 
 #include <GWCA/GWCA.h>
 
-#include <GWCA/Packets/Opcodes.h>
 #include <GWCA/Utilities/Hooker.h>
 
 #include <GWCA/GameEntities/Agent.h>
@@ -11,6 +10,8 @@
 #include <GWCA/Managers/CtoSMgr.h>
 #include <GWCA/Managers/GameThreadMgr.h>
 
+#define GAME_CMSG_INTERACT_GADGET                   (0x004F) // 79
+#define GAME_CMSG_SEND_SIGNPOST_DIALOG              (0x0051) // 81
 
 DLLAPI ToolboxPlugin* ToolboxPluginInstance()
 {
@@ -24,8 +25,8 @@ void LongFinger::Initialize(ImGuiContext* ctx, const ImGuiAllocFns fns, const HM
 
     GW::Initialize();
 
-    GW::Chat::CreateCommand(L"longfinger", [this](const wchar_t*, int, LPWSTR*) {
-        GW::GameThread::Enqueue([this] {
+    GW::Chat::CreateCommand(L"longfinger", [](const wchar_t*, int, const LPWSTR*) {
+        GW::GameThread::Enqueue([] {
             const auto target = GW::Agents::GetTarget();
             if (target && target->GetIsGadgetType()) {
                 bool res = true;
