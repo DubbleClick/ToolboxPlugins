@@ -49,7 +49,7 @@ void AllowAllDialogs::Initialize(ImGuiContext* ctx, ImGuiAllocFns fns, HMODULE t
     IsDialogAvailable_Func = reinterpret_cast<IsDialogAvailable_pt>(GW::Scanner::FunctionFromNearCall(address));
 
     if (IsDialogAvailable_Func) {
-        GW::HookBase::CreateHook(IsDialogAvailable_Func, OnIsDialogAvailable, reinterpret_cast<void**>(&IsDialogAvailable_Ret));
+        GW::HookBase::CreateHook(reinterpret_cast<void**>(&IsDialogAvailable_Func), OnIsDialogAvailable, reinterpret_cast<void**>(&IsDialogAvailable_Ret));
         GW::HookBase::EnableHooks(IsDialogAvailable_Func);
     }
     if (!IsDialogAvailable_Func) {
