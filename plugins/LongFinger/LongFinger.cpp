@@ -29,9 +29,9 @@ void LongFinger::Initialize(ImGuiContext* ctx, const ImGuiAllocFns fns, const HM
         GW::GameThread::Enqueue([] {
             const auto target = GW::Agents::GetTarget();
             if (target && target->GetIsGadgetType()) {
-                bool res = true;
-                res = res && GW::CtoS::SendPacket(0xC, GAME_CMSG_INTERACT_GADGET, target->agent_id, 0); // GW::Agents::GoSignpost(target);
-                res = res && GW::CtoS::SendPacket(0x8, GAME_CMSG_SEND_SIGNPOST_DIALOG, 0x2);            // GW::Items::OpenLockedChest();
+                bool res = false;
+                //res = res && GW::CtoS::SendPacket(0xC, GAME_CMSG_INTERACT_GADGET, target->agent_id, 0); // GW::Agents::GoSignpost(target);
+                //res = res && GW::CtoS::SendPacket(0x8, GAME_CMSG_SEND_SIGNPOST_DIALOG, 0x2);            // GW::Items::OpenLockedChest();
                 if (!res) {
                     WriteChat(GW::Chat::CHANNEL_GWCA1, L"Failed to open target locked chest", L"LongFinger");
                 }

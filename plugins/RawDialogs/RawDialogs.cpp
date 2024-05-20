@@ -23,7 +23,8 @@ DLLAPI ToolboxPlugin* ToolboxPluginInstance()
 
 auto SendDialog(auto id)
 {
-    return GW::CtoS::SendPacket(0x8, GAME_CMSG_SEND_DIALOG, id);
+    return false;
+    //return GW::CtoS::SendPacket(0x8, GAME_CMSG_SEND_DIALOG, id);
 }
 
 auto ParseUInt(const wchar_t* str, unsigned int* val, const int base = 0)
