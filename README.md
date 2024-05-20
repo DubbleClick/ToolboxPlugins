@@ -1,6 +1,8 @@
 # GWToolbox++ Plugins
 
-## $${\color{red}For an official GWToolbox plugin, check the gwdevhub/gwtoolboxpp repository. This repository is merely allow people to set up their own plugins in a convenient fashion. Do not file any complaints or refer to this, use it at your own discretion.}$$
+## $${\color{red}For \space an \space official \space GWToolbox \space plugin, \space check \space the \space gwdevhub/gwtoolboxpp \space repository.}$$
+## $${\color{red}This \space repository \space is \space merely \space allow \space people \space to \space set \space up \space their \space own \space plugins \space in \space a \space convenient \space fashion.}$$
+## $${\color{red}Do \space not \space file \space any \space complaints \space or \space refer \space to \space this, \space use \space it \space at \space your \space own \space discretion.}$$
 
 ## A set of plugins for the popular Guild Wars 1 tool "GWToolbox"
 
