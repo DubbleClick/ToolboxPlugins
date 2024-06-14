@@ -27,7 +27,6 @@ void TargetEverything::Initialize(ImGuiContext* ctx, const ImGuiAllocFns fns, co
 {
     ToolboxPlugin::Initialize(ctx, fns, toolbox_dll);
 
-    GW::Initialize();
     GW::Scanner::Initialize(toolbox_dll);
     // find in ChatCommands::TargetNearest
     if (const auto addr = GW::Scanner::Find("\xE8\xCC\xCC\xCC\xCC\x83\xC4\x04\x0F\xB6\xC8\x85\xC9\x75\x02\xEB\xC6", "x????xxxxxxxxxxxx")) {
@@ -40,10 +39,16 @@ void TargetEverything::Initialize(ImGuiContext* ctx, const ImGuiAllocFns fns, co
         );
     }
 
+    if (!GetIsAgentTargettable_Func) {
+        GW::Initialize();
+        GW::Chat::WriteChat(GW::Chat::CHANNEL_WARNING, L"Failed to find GetIsAgentTargettable_Func in GWToolboxdll.dll", L"TargetEverything");
+        GW::Scanner::Initialize();
+        GW::Terminate();
+        return;
+    }
     GW::HookBase::CreateHook(reinterpret_cast<void**>(&GetIsAgentTargettable_Func), GetIsAgentTargettableOverride, reinterpret_cast<void**>(&RetGetIsAgentTargettable));
     GW::HookBase::EnableHooks(GetIsAgentTargettable_Func);
     GW::Scanner::Initialize();
-    GW::Chat::WriteChat(GW::Chat::CHANNEL_GWCA1, L"Initialized", L"TargetEverything");
 }
 
 void TargetEverything::SignalTerminate()
@@ -60,5 +65,5 @@ bool TargetEverything::CanTerminate()
 void TargetEverything::Terminate()
 {
     ToolboxPlugin::Terminate();
-    GW::Terminate();
+    GW::HookBase::RemoveHook(GetIsAgentTargettable_Func);
 }

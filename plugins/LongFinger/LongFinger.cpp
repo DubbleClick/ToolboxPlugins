@@ -7,7 +7,7 @@
 #include <GWCA/GameEntities/Agent.h>
 #include <GWCA/Managers/AgentMgr.h>
 #include <GWCA/Managers/ChatMgr.h>
-#include <GWCA/Managers/CtoSMgr.h>
+//#include <GWCA/Managers/CtoSMgr.h>
 #include <GWCA/Managers/GameThreadMgr.h>
 
 #define GAME_CMSG_INTERACT_GADGET                   (0x004F) // 79
@@ -25,7 +25,7 @@ void LongFinger::Initialize(ImGuiContext* ctx, const ImGuiAllocFns fns, const HM
 
     GW::Initialize();
 
-    GW::Chat::CreateCommand(L"longfinger", [](const wchar_t*, int, const LPWSTR*) {
+    GW::Chat::CreateCommand(L"longfinger", [](GW::HookStatus*, const wchar_t*, int, const LPWSTR*) {
         GW::GameThread::Enqueue([] {
             const auto target = GW::Agents::GetTarget();
             if (target && target->GetIsGadgetType()) {
