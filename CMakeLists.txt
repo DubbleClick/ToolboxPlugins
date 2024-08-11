@@ -36,9 +36,7 @@ FOREACH(subdir ${SUBDIRS})
 	file(GLOB SOURCES
 		"plugins/${subdir}/*.h"
 		"plugins/${subdir}/*.cpp"
-		"plugins/${subdir}/*.ixx"
 		${gwtoolboxpp_SOURCE_DIR}/plugins/Base/*.h
-		${gwtoolboxpp_SOURCE_DIR}/plugins/Base/*.ixx
 		${gwtoolboxpp_SOURCE_DIR}/plugins/Base/*.cpp
 		)
 
