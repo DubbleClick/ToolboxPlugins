@@ -44,9 +44,6 @@ void Follower::Update(const float diff)
     if (!party) {
         return;
     }
-    if (following_index >= GW::PartyMgr::GetPartySize()) {
-        following_index = static_cast<int>(GW::PartyMgr::GetPartySize()) - 1;
-    }
     GW::Agent* target = nullptr;
     if (following_index < party->players.size()) {
         const auto player = party->players[following_index];
